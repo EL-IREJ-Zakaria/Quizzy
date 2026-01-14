@@ -76,63 +76,37 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <!-- Progress Line at the top of card -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:progressDrawable="@drawable/custom_progress_bar"
-                android:progress="30" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <TextView
-                    android:id="@+id/tv_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="QUESTION 1 OF 10"
-                    android:textColor="#9DA3B4"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1" />
-
-                <com.google.android.material.card.MaterialCardView
+                android:layout_height="140dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F8F9FA">
+                
+                <ImageView
+                    android:id="@+id/iv_image"
                     android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#F8F9FA">
-                    
-                    <ImageView
-                        android:id="@+id/iv_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="16dp"
-                        android:scaleType="fitCenter"
-                        app:srcCompat="@android:drawable/ic_menu_help" />
-                </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@android:drawable/ic_menu_help" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:id="@+id/tv_question"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:text="Which country does this flag belong to?"
-                    android:textColor="#2D3142"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:lineSpacingExtra="4dp" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="Which country does this flag belong to?"
+                android:textColor="#2D3142"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="4dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var mQuestionsList: ArrayList<Question>? = null
     private var mSelectedOptionPosition: Int = 0
     private var mCorrectAnswers: Int = 0
+    private var mCategory: String? = null
     
     // Timer Variables
     private var mCountDownTimer: CountDownTimer? = null
     private val mTimerDuration: Long = 15000 // 15 seconds
     
     private var progressBar: ProgressBar? = null
-    private var tvProgress: TextView? = null
     private var tvQuestion: TextView? = null
     private var ivImage: ImageView? = null
     private var tvOptionOne: TextView? = null
@@ -44,8 +44,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        mCategory = intent.getStringExtra(Constants.CATEGORY)
+
         progressBar = findViewById(R.id.progressBar)
-        tvProgress = findViewById(R.id.tv_progress)
         tvQuestion = findViewById(R.id.tv_question)
         ivImage = findViewById(R.id.iv_image)
         tvOptionOne = findViewById(R.id.tv_option_one)
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnSubmit?.setOnClickListener(this)
         btnHint?.setOnClickListener(this)
 
-        mQuestionsList = Constants.getQuestions()
+        mQuestionsList = Constants.getQuestions(mCategory ?: "Geography")
 
         setQuestion()
     }
@@ -82,10 +83,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 tvTimer?.text = "0"
                 timerProgress?.progress = 0
                 
-                // Show correct answer immediately on timeout
                 showCorrectAnswerOnTimeout()
                 
-                // Transition to next question after a short delay
                 Handler(Looper.getMainLooper()).postDelayed({
                     moveToNextQuestion()
                 }, 2000)
@@ -95,8 +94,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun showCorrectAnswerOnTimeout() {
         val question = mQuestionsList?.get(mCurrentPosition - 1)
-        
-        // If an option was selected but timer ran out, evaluate it
         if (mSelectedOptionPosition > 0) {
             if (question!!.correctAnswer != mSelectedOptionPosition) {
                 answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
@@ -104,11 +101,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 mCorrectAnswers++
             }
         }
-        
-        // Always show the correct one
         answerView(question!!.correctAnswer, R.drawable.correct_option_border_bg)
-        
-        // Disable everything during the automatic transition
         setClickableState(false)
     }
 
@@ -150,12 +143,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btnSubmit?.text = "SUBMIT"
         }
 
+        progressBar?.max = mQuestionsList!!.size
         progressBar?.progress = mCurrentPosition
-        tvProgress?.text = "QUESTION $mCurrentPosition OF ${mQuestionsList?.size}"
 
         tvQuestion?.text = question.text
         
-        // Use Glide to load image from URL
         ivImage?.let {
             Glide.with(this)
                 .load(question.imageUrl)
@@ -213,7 +205,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         options.remove(question.correctAnswer)
         options.shuffle()
         
-        // Hide two incorrect options
         for (i in 0..1) {
             when (options[i]) {
                 1 -> tvOptionOne?.visibility = View.INVISIBLE
@@ -229,20 +220,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mCountDownTimer?.cancel()
         
         if (mSelectedOptionPosition == 0) {
-            // Case where user clicked submit without selection
             showCorrectAnswer()
             btnSubmit?.text = if (mCurrentPosition >= mQuestionsList!!.size) "FINISH" else "GO TO NEXT"
-            mSelectedOptionPosition = -1 // marked as "revealed"
+            mSelectedOptionPosition = -1
             return
         }
         
         if (mSelectedOptionPosition == -1) {
-             // Already showed answer, move to next
              moveToNextQuestion()
              return
         }
 
-        // Evaluating selection
         val question = mQuestionsList?.get(mCurrentPosition - 1)
         if (question!!.correctAnswer != mSelectedOptionPosition) {
             answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
@@ -256,7 +244,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             btnSubmit?.text = "GO TO NEXT"
         }
-        mSelectedOptionPosition = -1 // Transition state
+        mSelectedOptionPosition = -1
     }
     
     private fun showCorrectAnswer() {
@@ -274,7 +262,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun selectedOptionView(tv: TextView, selectedOptionNum: Int) {
-        // Prevent selection after answer is revealed
         if (mSelectedOptionPosition == -1) return
         
         defaultOptionsView()
