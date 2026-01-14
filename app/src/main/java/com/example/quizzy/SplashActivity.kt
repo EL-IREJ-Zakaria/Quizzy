@@ -12,8 +12,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            // On lance maintenant l'activité des catégories au lieu de MainActivity directement
+            startActivity(Intent(this, CategoryActivity::class.java))
             finish()
-        }, 2000) // 2 seconds delay
+        }, 2000)
     }
 }
