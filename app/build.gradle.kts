@@ -45,6 +45,12 @@ dependencies {
     // Glide for loading images from URL
     implementation("com.github.bumptech.glide:glide:4.16.0")
     
+    // Lottie for animations
+    implementation("com.airbnb.android:lottie:6.7.1")
+    
+    // Konfetti for celebration
+    implementation("nl.dionsegijn:konfetti-xml:2.0.5")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
