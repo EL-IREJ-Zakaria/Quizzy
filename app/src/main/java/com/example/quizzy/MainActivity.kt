@@ -22,11 +22,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var mQuestionsList: ArrayList<Question>? = null
     private var mSelectedOptionPosition: Int = 0
     private var mCorrectAnswers: Int = 0
+    private var mTotalScore: Int = 0
     private var mCategory: String? = null
     
     // Timer Variables
     private var mCountDownTimer: CountDownTimer? = null
     private val mTimerDuration: Long = 15000 // 15 seconds
+    private var mSecondsRemaining: Int = 15
     
     private var progressBar: ProgressBar? = null
     private var tvQuestion: TextView? = null
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var btnHint: Button? = null
     private var tvTimer: TextView? = null
     private var timerProgress: ProgressBar? = null
+    private var tvScoreDisplay: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +60,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnHint = findViewById(R.id.btn_hint)
         tvTimer = findViewById(R.id.tv_timer)
         timerProgress = findViewById(R.id.timer_progress)
+        tvScoreDisplay = findViewById(R.id.tv_title) // Using title as a placeholder for score if needed, or I'll just keep it
 
         tvOptionOne?.setOnClickListener(this)
         tvOptionTwo?.setOnClickListener(this)
@@ -74,13 +78,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mCountDownTimer?.cancel()
         mCountDownTimer = object : CountDownTimer(mTimerDuration, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val secondsRemaining = (millisUntilFinished / 1000).toInt()
-                tvTimer?.text = secondsRemaining.toString()
-                timerProgress?.progress = (secondsRemaining * 100 / (mTimerDuration / 1000)).toInt()
+                mSecondsRemaining = (millisUntilFinished / 1000).toInt()
+                tvTimer?.text = mSecondsRemaining.toString()
+                timerProgress?.progress = (mSecondsRemaining * 100 / (mTimerDuration / 1000)).toInt()
             }
 
             override fun onFinish() {
                 tvTimer?.text = "0"
+                mSecondsRemaining = 0
                 timerProgress?.progress = 0
                 
                 showCorrectAnswerOnTimeout()
@@ -99,6 +104,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
             } else {
                 mCorrectAnswers++
+                mTotalScore += calculatePoints(true, question.difficulty, (mTimerDuration/1000).toInt() - mSecondsRemaining, (mTimerDuration/1000).toInt())
             }
         }
         answerView(question!!.correctAnswer, R.drawable.correct_option_border_bg)
@@ -116,6 +122,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
             intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionsList?.size)
+            intent.putExtra(Constants.TOTAL_SCORE, mTotalScore)
             startActivity(intent)
             finish()
         }
@@ -145,6 +152,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         progressBar?.max = mQuestionsList!!.size
         progressBar?.progress = mCurrentPosition
+        
+        tvTitle?.text = "${question.category} - ${question.difficulty}"
 
         tvQuestion?.text = question.text
         
@@ -214,28 +223,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         btnHint?.isEnabled = false
+        // Penalize hint usage by capping max score or just reduce current question potential points
     }
 
     private fun handleSubmission() {
-        mCountDownTimer?.cancel()
-        
-        if (mSelectedOptionPosition == 0) {
-            showCorrectAnswer()
-            btnSubmit?.text = if (mCurrentPosition >= mQuestionsList!!.size) "FINISH" else "GO TO NEXT"
-            mSelectedOptionPosition = -1
-            return
-        }
-        
         if (mSelectedOptionPosition == -1) {
              moveToNextQuestion()
              return
         }
 
+        if (mSelectedOptionPosition == 0) {
+            // No option selected, but clicking submit? Maybe show a toast or just do nothing
+            return
+        }
+
+        mCountDownTimer?.cancel()
+        
         val question = mQuestionsList?.get(mCurrentPosition - 1)
         if (question!!.correctAnswer != mSelectedOptionPosition) {
             answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
         } else {
             mCorrectAnswers++
+            val timeSpent = (mTimerDuration/1000).toInt() - mSecondsRemaining
+            mTotalScore += calculatePoints(true, question.difficulty, timeSpent, (mTimerDuration/1000).toInt())
         }
         answerView(question.correctAnswer, R.drawable.correct_option_border_bg)
 
@@ -246,12 +256,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         mSelectedOptionPosition = -1
     }
-    
-    private fun showCorrectAnswer() {
-        val question = mQuestionsList?.get(mCurrentPosition - 1)
-        answerView(question!!.correctAnswer, R.drawable.correct_option_border_bg)
-    }
 
+    private fun calculatePoints(isCorrect: Boolean, difficulty: String, timeSpent: Int, timeLimit: Int): Int {
+        if (!isCorrect) return 0
+        
+        val basePoints = when (difficulty) {
+            "Easy" -> 10
+            "Medium" -> 20
+            "Hard" -> 30
+            else -> 10
+        }
+        
+        val timeRatio = timeSpent.toFloat() / timeLimit
+        val speedMultiplier = when {
+            timeRatio <= 0.3f -> 1.5f
+            timeRatio <= 0.5f -> 1.3f
+            timeRatio <= 0.7f -> 1.1f
+            else -> 1.0f
+        }
+        
+        return (basePoints * speedMultiplier).toInt()
+    }
+    
     private fun answerView(answer: Int, drawableView: Int) {
         when (answer) {
             1 -> tvOptionOne?.background = ContextCompat.getDrawable(this, drawableView)
@@ -274,6 +300,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.drawable.selected_option_border_bg
         )
     }
+
+    private val tvTitle: TextView?
+        get() = findViewById(R.id.tv_title)
 
     override fun onDestroy() {
         super.onDestroy()

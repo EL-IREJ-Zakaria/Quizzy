@@ -9,5 +9,6 @@ data class Question(
     val optionThree: String,
     val optionFour: String,
     val correctAnswer: Int,
-    val category: String // Added category field
+    val category: String,
+    val difficulty: String = "Medium" // Added difficulty with default
 )

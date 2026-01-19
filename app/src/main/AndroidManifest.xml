@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -34,6 +35,10 @@
             
         <activity 
             android:name=".ResultActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
             android:exported="false" />
     </application>
 

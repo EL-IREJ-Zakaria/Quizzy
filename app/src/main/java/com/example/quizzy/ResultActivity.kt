@@ -10,11 +10,13 @@ class ResultActivity : AppCompatActivity() {
 
         val totalQuestions = intent.getIntExtra(Constants.TOTAL_QUESTIONS, 0)
         val correctAnswers = intent.getIntExtra(Constants.CORRECT_ANSWERS, 0)
+        val totalScore = intent.getIntExtra(Constants.TOTAL_SCORE, 0)
 
         val fragment = ResultFragment()
         val bundle = Bundle()
         bundle.putInt(Constants.TOTAL_QUESTIONS, totalQuestions)
         bundle.putInt(Constants.CORRECT_ANSWERS, correctAnswers)
+        bundle.putInt(Constants.TOTAL_SCORE, totalScore)
         fragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()

@@ -2,6 +2,7 @@ package com.example.quizzy
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
 
@@ -21,6 +22,10 @@ class CategoryActivity : AppCompatActivity() {
         setupCategoryClick(R.id.card_literature, "Literature")
         setupCategoryClick(R.id.card_nature, "Nature")
         setupCategoryClick(R.id.card_technology, "Technology")
+
+        findViewById<ImageButton>(R.id.btn_profile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
     }
 
     private fun setupCategoryClick(id: Int, categoryName: String) {

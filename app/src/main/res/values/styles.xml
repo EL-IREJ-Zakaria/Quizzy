@@ -34,4 +34,8 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="CircleShapeAppearance">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

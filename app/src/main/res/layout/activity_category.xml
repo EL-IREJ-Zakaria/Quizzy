@@ -12,6 +12,21 @@
         android:background="@color/purple_500"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/btn_profile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Profile"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_myplaces"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@android:color/white" />
+
     <TextView
         android:id="@+id/tv_category_title"
         android:layout_width="wrap_content"
@@ -39,9 +54,6 @@
             android:columnCount="2"
             android:padding="16dp">
 
-            <!-- Category Cards will be here -->
-            <!-- Using a simplified approach for the prompt, normally I'd use a RecyclerView -->
-            
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_geography"
                 style="@style/CategoryCardStyle">
